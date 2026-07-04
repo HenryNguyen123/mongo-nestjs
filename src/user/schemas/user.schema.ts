@@ -1,18 +1,26 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({
   timestamps: true,
 })
 export class User {
-  @Prop()
+  @Prop({
+    required: true,
+    minLength: 2,
+  })
   name!: string;
 
   @Prop({
+    required: true,
     unique: true,
+    minLength: 2,
   })
   email!: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+    minlength: 6,
+  })
   password!: string;
 
   @Prop()
@@ -22,4 +30,7 @@ export class User {
     default: 'offline',
   })
   status?: string;
+
+  createdAt!: Date;
 }
+export const UserSchema = SchemaFactory.createForClass(User);

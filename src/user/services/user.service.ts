@@ -1,0 +1,46 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { plainToInstance } from 'class-transformer';
+import { Model } from 'mongoose';
+import { hashPassword } from 'src/common/utils/bcrypt-password.util';
+import { CreateUserRequestDto } from 'src/user/dtos/request/create-user.request.dto';
+import { UserResDto } from 'src/user/dtos/response/user.response.dto';
+import { User } from 'src/user/schemas/user.schema';
+
+@Injectable()
+export class UserService {
+  constructor(
+    @InjectModel(User.name)
+    private userModel: Model<User>,
+  ) {}
+  //create
+  async create(
+    body: CreateUserRequestDto,
+    file: Express.Multer.File | null,
+    path: string,
+  ): Promise<UserResDto> {
+    const { email, name, password, status } = body;
+    const check = await this.userModel.findOne({ email });
+    if (check) throw new BadRequestException('Email already exists');
+    const hash = await hashPassword(password);
+    const pathAvatar = file ? `${path}/${file.filename}` : null;
+    // create document
+    const user = await this.userModel.create({
+      name: name,
+      email: email,
+      password: hash,
+      avatar: pathAvatar,
+      status: status,
+    });
+    const payload: UserResDto = {
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      status: user.status ?? 'offline',
+      createdAt: user.createdAt,
+    };
+    return plainToInstance(UserResDto, { payload });
+  }
+  //read
+  async read() {}
+}
