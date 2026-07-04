@@ -42,5 +42,15 @@ export class UserService {
     return plainToInstance(UserResDto, { payload });
   }
   //read
-  async read() {}
+  async read(): Promise<UserResDto> {
+    const users = await this.userModel.find({});
+    const listUsers: UserResDto[] = users.map((u) => ({
+      name: u.name,
+      email: u.email,
+      avatar: u.avatar,
+      status: u.status ?? 'offline',
+      createdAt: u.createdAt,
+    }));
+    return plainToInstance(UserResDto, { listUsers });
+  }
 }

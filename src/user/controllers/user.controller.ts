@@ -40,7 +40,7 @@ export class UserController {
   }
   //read
   @Get()
-  async read() {
+  async read(): Promise<UserResDto> {
     return await this.userService.read();
   }
   //get by id
