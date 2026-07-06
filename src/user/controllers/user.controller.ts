@@ -45,10 +45,14 @@ export class UserController {
   }
   //get by id
   @Get(':id')
-  async findOne(@Param('id') id: string) {}
+  async findOne(@Param('id') id: string): Promise<UserResDto> {
+    return await this.userService.findOne(id);
+  }
   //update
   @Patch(':id')
-  async update(@Param('id') id: string) {}
+  async update(@Param('id') id: string) {
+    return await this.userService.update(id);
+  }
   //delete
   @Delete(':id')
   @HttpCode(204)

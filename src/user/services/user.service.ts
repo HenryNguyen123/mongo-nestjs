@@ -1,17 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
 import { hashPassword } from 'src/common/utils/bcrypt-password.util';
 import { CreateUserRequestDto } from 'src/user/dtos/request/create-user.request.dto';
 import { UserResDto } from 'src/user/dtos/response/user.response.dto';
-import { User } from 'src/user/schemas/user.schema';
+import { User, UserDocument } from 'src/user/schemas/user.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
-    private userModel: Model<User>,
+    private userModel: Model<UserDocument>,
   ) {}
   //create
   async create(
@@ -45,6 +45,7 @@ export class UserService {
   async read(): Promise<UserResDto> {
     const users = await this.userModel.find({});
     const listUsers: UserResDto[] = users.map((u) => ({
+      id: u.id,
       name: u.name,
       email: u.email,
       avatar: u.avatar,
@@ -53,4 +54,20 @@ export class UserService {
     }));
     return plainToInstance(UserResDto, { listUsers });
   }
+  //get by id
+  async findOne(id: string) {
+    const user = await this.userModel.findById({
+      _id: id,
+    });
+    if (!user) throw new InternalServerErrorException('user not exist!');
+    const payload: UserResDto = {
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      status: user.status ?? 'offline',
+      createdAt: user.createdAt,
+    };
+    return plainToInstance(UserResDto, { payload });
+  }
+  //update
 }
