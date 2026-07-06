@@ -14,6 +14,7 @@ import {
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UploadFileImageInterceptor } from 'src/common/interceptor/upload-file-image.interceptor.common';
 import { CreateUserRequestDto } from 'src/user/dtos/request/create-user.request.dto';
+import { UpdateUserReq } from 'src/user/dtos/request/update-user.request.dto';
 import { UserResDto } from 'src/user/dtos/response/user.response.dto';
 import { UserService } from 'src/user/services/user.service';
 
@@ -50,8 +51,20 @@ export class UserController {
   }
   //update
   @Patch(':id')
-  async update(@Param('id') id: string) {
-    return await this.userService.update(id);
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: UpdateUserReq,
+  })
+  @UseInterceptors(
+    UploadFileImageInterceptor('avatar', './public/images/avatar'),
+  )
+  async update(
+    @Param('id') id: string,
+    @Body() body: UpdateUserReq,
+    @UploadedFile() file: Express.Multer.File | null,
+  ): Promise<UserResDto> {
+    const path: string = 'images/avatar';
+    return await this.userService.update(id, body, file, path);
   }
   //delete
   @Delete(':id')

@@ -1,9 +1,15 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
 import { hashPassword } from 'src/common/utils/bcrypt-password.util';
 import { CreateUserRequestDto } from 'src/user/dtos/request/create-user.request.dto';
+import { UpdateUserReq } from 'src/user/dtos/request/update-user.request.dto';
 import { UserResDto } from 'src/user/dtos/response/user.response.dto';
 import { User, UserDocument } from 'src/user/schemas/user.schema';
 
@@ -56,9 +62,7 @@ export class UserService {
   }
   //get by id
   async findOne(id: string) {
-    const user = await this.userModel.findById({
-      _id: id,
-    });
+    const user = await this.userModel.findById(id);
     if (!user) throw new InternalServerErrorException('user not exist!');
     const payload: UserResDto = {
       name: user.name,
@@ -70,4 +74,35 @@ export class UserService {
     return plainToInstance(UserResDto, { payload });
   }
   //update
+  async update(
+    id: string,
+    body: UpdateUserReq,
+    file: Express.Multer.File | null,
+    path: string,
+  ) {
+    const { password, status } = body;
+    const check = await this.userModel.findById(id);
+    if (!check) throw new NotFoundException('user not exist!');
+    const payloadUpdate: Partial<User> = {
+      avatar: file ? `${path}/${file.filename}` : check.avatar,
+      status: status ?? check.status,
+    };
+    if (password) {
+      payloadUpdate.password = await hashPassword(password);
+    }
+    const updateUser = await this.userModel.findByIdAndUpdate(
+      id,
+      payloadUpdate,
+      { new: true },
+    );
+    if (!updateUser) throw new NotFoundException('User not found');
+    const payload: UserResDto = {
+      name: updateUser.name,
+      email: updateUser.email,
+      avatar: updateUser.avatar,
+      status: updateUser.status ?? 'offline',
+      createdAt: updateUser.createdAt,
+    };
+    return plainToInstance(UserResDto, { payload });
+  }
 }
