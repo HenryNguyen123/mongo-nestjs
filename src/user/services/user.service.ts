@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -51,7 +50,7 @@ export class UserService {
   async read(): Promise<UserResDto> {
     const users = await this.userModel.find({});
     const listUsers: UserResDto[] = users.map((u) => ({
-      id: u.id,
+      id: u.id as string,
       name: u.name,
       email: u.email,
       avatar: u.avatar,
@@ -63,7 +62,7 @@ export class UserService {
   //get by id
   async findOne(id: string) {
     const user = await this.userModel.findById(id);
-    if (!user) throw new InternalServerErrorException('user not exist!');
+    if (!user) throw new NotFoundException('user not exist!');
     const payload: UserResDto = {
       name: user.name,
       email: user.email,
@@ -104,5 +103,10 @@ export class UserService {
       createdAt: updateUser.createdAt,
     };
     return plainToInstance(UserResDto, { payload });
+  }
+  //delete
+  async remove(id: string): Promise<void> {
+    const delUser = await this.userModel.findByIdAndDelete(id);
+    if (!delUser) throw new NotFoundException('User not found');
   }
 }
