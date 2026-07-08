@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateFriendReqDto } from 'src/friend/dtos/request/create-friend.request.dto';
+import { FriendResDto } from 'src/friend/dtos/response/friend.resquest.dto';
 import { FriendService } from 'src/friend/services/friend.service';
 
 @ApiTags('friend')
@@ -22,12 +23,14 @@ export class FriendController {
   @ApiBody({
     type: CreateFriendReqDto,
   })
-  async create(@Body() body: CreateFriendReqDto) {
+  async create(@Body() body: CreateFriendReqDto): Promise<FriendResDto> {
     return await this.friendService.create(body);
   }
   //get all
   @Get()
-  async read() {}
+  async read(): Promise<FriendResDto> {
+    return await this.friendService.read();
+  }
   //find by id
   @Get(':id')
   async findOne() {}

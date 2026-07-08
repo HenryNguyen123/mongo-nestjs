@@ -42,4 +42,14 @@ export class FriendService {
       createAt: friend.createdAt,
     });
   }
+  //get all friend
+  async read(): Promise<FriendResDto> {
+    const friends = await this.friendModel.find({});
+    const listFriends: FriendResDto[] = friends.map((f) => ({
+      user1: f.user1,
+      user2: f.user2,
+      createdAt: f.createdAt,
+    }))
+    return plainToInstance(FriendResDto, { listFriends });
+  }
 }
