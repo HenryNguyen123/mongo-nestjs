@@ -5,11 +5,13 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
   Post,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateFriendReqDto } from 'src/friend/dtos/request/create-friend.request.dto';
+import { DeleteFriendReqDto } from 'src/friend/dtos/request/delete-friend.request.dto';
 import { FriendResDto } from 'src/friend/dtos/response/friend.resquest.dto';
 import { FriendService } from 'src/friend/services/friend.service';
 
@@ -33,11 +35,19 @@ export class FriendController {
   }
   //find by id
   @Get(':id')
-  async findOne() {}
+  async getFriends(@Param('id') id: string): Promise<FriendResDto> {
+    return await this.friendService.getFriends(id);
+  }
   //update
   @Patch(':id')
   async update() {}
   //delete
   @Delete(':id')
-  async remove() {}
+  @HttpCode(204)
+  @ApiBody({
+    type: DeleteFriendReqDto,
+  })
+  async unfriend(@Param('id') id: string, @Body() body: DeleteFriendReqDto) {
+    await this.friendService.unfriend(id, body);
+  }
 }
