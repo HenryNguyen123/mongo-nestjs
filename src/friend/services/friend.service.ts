@@ -70,8 +70,6 @@ export class FriendService {
     }));
     return plainToInstance(FriendResDto, { payload });
   }
-  //update friend
-  async update() {}
   //delete friend
   async unfriend(id: string, body: DeleteFriendReqDto) {
     const { friendId } = body;

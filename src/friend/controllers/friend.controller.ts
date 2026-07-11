@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Post,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
@@ -38,9 +37,6 @@ export class FriendController {
   async getFriends(@Param('id') id: string): Promise<FriendResDto> {
     return await this.friendService.getFriends(id);
   }
-  //update
-  @Patch(':id')
-  async update() {}
   //delete
   @Delete(':id')
   @HttpCode(204)
