@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ChatModule } from 'src/chat/chat.module';
 import { UserModule } from 'src/user/user.module';
 import { FriendModule } from 'src/friend/friend.module';
+import { ConversationModule } from 'src/conversation/conversation.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -16,6 +17,7 @@ import { FriendModule } from 'src/friend/friend.module';
     UserModule,
     ChatModule,
     FriendModule,
+    ConversationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
