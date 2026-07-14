@@ -1,5 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+import {
+  Attachment,
+  AttachmentSchema,
+} from 'src/messages/schema/attachment.schema';
 
 export type MessageDocument = HydratedDocument<Message>;
 @Schema({
@@ -8,14 +12,40 @@ export type MessageDocument = HydratedDocument<Message>;
 export class Message {
   @Prop({
     required: true,
+    type: Types.ObjectId,
+    ref: 'Conversation',
   })
-  user1!: string;
+  conversationId!: Types.ObjectId;
 
   @Prop({
     required: true,
+    type: Types.ObjectId,
+    ref: 'User',
   })
-  user2!: string;
+  senderId!: Types.ObjectId;
+
+  @Prop({
+    required: false,
+    default: false,
+  })
+  isDeleted!: boolean;
+
+  @Prop({
+    required: false,
+  })
+  content!: string;
+
+  @Prop({
+    default: 'text',
+  })
+  type!: string;
+
+  @Prop({
+    type: [AttachmentSchema],
+    default: [],
+  })
+  attachments!: Attachment[];
 
   createdAt?: Date;
 }
-export const FriendSchema = SchemaFactory.createForClass(Message);
+export const MessageSchema = SchemaFactory.createForClass(Message);
