@@ -14,6 +14,7 @@ import {
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UploadFileImageInterceptor } from 'src/common/interceptor/upload-file-image.interceptor.common';
 import { CreateUserRequestDto } from 'src/user/dtos/request/create-user.request.dto';
+import { LoginReqDto } from 'src/user/dtos/request/login.request.dto';
 import { UpdateUserReq } from 'src/user/dtos/request/update-user.request.dto';
 import { UserResDto } from 'src/user/dtos/response/user.response.dto';
 import { UserService } from 'src/user/services/user.service';
@@ -71,5 +72,13 @@ export class UserController {
   @HttpCode(204)
   async remove(@Param('id') id: string): Promise<void> {
     await this.userService.remove(id);
+  }
+  //login
+  @Post('/login')
+  @ApiBody({
+    type: LoginReqDto,
+  })
+  async login(@Body() body: LoginReqDto) {
+    return await this.userService.login(body);
   }
 }

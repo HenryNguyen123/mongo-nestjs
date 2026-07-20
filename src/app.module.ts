@@ -9,10 +9,19 @@ import { FriendModule } from 'src/friend/friend.module';
 import { ConversationModule } from 'src/conversation/conversation.module';
 import { ChatGateway } from './chat/chat.gateway';
 import { ChatModule } from 'src/chat/chat.module';
+import { JwtModule } from '@nestjs/jwt';
+import 'dotenv/config';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: {
+        expiresIn: '7d',
+      },
     }),
     MongooseModule.forRoot(process.env.NEST_MONGO_URL!),
     UserModule,

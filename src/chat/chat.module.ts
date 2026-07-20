@@ -2,6 +2,14 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatController } from 'src/chat/controllers/chat.controller';
 import { ChatService } from 'src/chat/services/chat.service';
+import {
+  Conversation,
+  ConversationSchema,
+} from 'src/conversation/schema/conversation.scheme';
+import {
+  Attachment,
+  AttachmentSchema,
+} from 'src/messages/schema/attachment.schema';
 import { Message, MessageSchema } from 'src/messages/schema/message.schema';
 
 @Module({
@@ -10,6 +18,14 @@ import { Message, MessageSchema } from 'src/messages/schema/message.schema';
       {
         name: Message.name,
         schema: MessageSchema,
+      },
+      {
+        name: Conversation.name,
+        schema: ConversationSchema,
+      },
+      {
+        name: Attachment.name,
+        schema: AttachmentSchema,
       },
     ]),
   ],
