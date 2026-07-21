@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChatController } from 'src/chat/controllers/chat.controller';
+import { PresenceController } from 'src/chat/controllers/presence.controller';
 import { ChatService } from 'src/chat/services/chat.service';
 import {
   Conversation,
@@ -28,8 +30,9 @@ import { Message, MessageSchema } from 'src/messages/schema/message.schema';
         schema: AttachmentSchema,
       },
     ]),
+    JwtModule.register({}),
   ],
-  controllers: [ChatController],
+  controllers: [ChatController, PresenceController],
   providers: [ChatService],
   exports: [],
 })
